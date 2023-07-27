@@ -44,6 +44,7 @@ namespace EasyCashIdentityProject.PresentationLayer.Controllers
             values.ProcessType = "Havale";
             values.ReceiverID = receiverAccountNumberID;
             values.Amount = sendMoneyForCustomerAccountProcessDto.Amount;
+            values.Description = sendMoneyForCustomerAccountProcessDto.Description;
 
             _customerAccountProcessService.TInsert(values);
 
