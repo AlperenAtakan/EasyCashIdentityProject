@@ -28,18 +28,19 @@ namespace EasyCashIdentityProject.PresentationLayer.Controllers
         {
             var context = new Context();
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-            var receiverAccountNumberID = context.CustomerAccounts.Where(x => x.CustomerAccountNumber == sendMoneyForCustomerAccountProcessDto.ReceiverAccountNumber).Select
-                (y => y.CustomerAccountID).FirstOrDefault();
+            var receiverAccountNumberID = context.CustomerAccounts
+                .Where(x => x.CustomerAccountNumber == sendMoneyForCustomerAccountProcessDto.ReceiverAccountNumber)
+                .Select(y => y.CustomerAccountID).FirstOrDefault();
 
 
-            //sendMoneyForCustomerAccountProcessDto.SenderID = user.Id;
-            //sendMoneyForCustomerAccountProcessDto.ProcessDate=Convert.ToDateTime( DateTime.Now.ToShortDateString());
-            //sendMoneyForCustomerAccountProcessDto.ProcessType = "Havale";
-            //sendMoneyForCustomerAccountProcessDto.RecevierID = receiverAccountNumberID;
+            var senderAccountNumberID=context.CustomerAccounts
+                .Where(x=>x.AppUserID==user.Id)
+                .Where(y=>y.CustomerAccountCurrency=="Türk Lirası")
+                .Select(z=>z.CustomerAccountID).FirstOrDefault();
 
             var values = new CustomerAccountProcess();
             values.ProcessDate = Convert.ToDateTime(DateTime.Now.ToShortDateString());
-            values.SenderID = user.Id;
+            values.SenderID = senderAccountNumberID;
             values.ProcessType = "Havale";
             values.ReceiverID = receiverAccountNumberID;
             values.Amount = sendMoneyForCustomerAccountProcessDto.Amount;
@@ -47,7 +48,9 @@ namespace EasyCashIdentityProject.PresentationLayer.Controllers
             _customerAccountProcessService.TInsert(values);
 
 
-            return RedirectToAction("Index","Deneme");
+            return RedirectToAction("Index", "Deneme");
         }
+        
+
     }
 }
